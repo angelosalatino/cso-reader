@@ -30,3 +30,6 @@ for topic, _ in ont.topics.items():
         count += 1
         
 print(f"Total topics with more than 1 gram: {count}")
+
+
+descendants = ont.get_all_descendants_of_topics(["artificial intelligence", "semantic web"])
