@@ -25,6 +25,7 @@ class Ontology:
         self.primary_labels_wu = dict()
         self.topic_stems = dict()
         self.all_broaders = dict()
+        self.level = dict()
         self.graph = None
 
         self.config = Config()
@@ -37,7 +38,8 @@ class Ontology:
                               'primary_labels',
                               'primary_labels_wu',
                               'topic_stems',
-                              'all_broaders')
+                              'all_broaders',
+                              'level')
 
         if load_ontology:
             self.load_ontology_pickle()
@@ -379,6 +381,7 @@ class Ontology:
 
             self.__generate_topic_stems()
             self.__get_all_branches()
+            self.__get_levels()
 
 
             with open(self.config.get_cso_pickle_path(), 'wb') as cso_file:
@@ -412,6 +415,28 @@ class Ontology:
                         this_topic_broaders.append(broader)
             self.all_broaders[topic] = list(set(this_topic_broaders))
 
+    def __get_levels(self):
+        """ Function that computes the depth level of all topics in CSO
+        """
+        
+        self.level = {topic:1 for topic,_ in self.topics.items()}
+        for concept, value in self.level.items(): 
+            queue = deque() 
+            max_depth = value
+            
+            queue.append({"t":concept,"d":value})
+            
+            while len(queue) > 0:
+                dequeued = queue.popleft()
+                if dequeued["t"] in self.broaders:
+                    broaders = self.broaders[dequeued["t"]]
+                    new_depth = dequeued["d"]+1
+                    if new_depth > max_depth:
+                        max_depth = new_depth
+                    for broader in broaders:
+                        queue.append({"t":broader,"d":dequeued["d"]+1})
+
+            self.level[concept] = max_depth
 
 
 

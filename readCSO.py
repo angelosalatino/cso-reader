@@ -33,3 +33,6 @@ print(f"Total topics with more than 1 gram: {count}")
 
 
 descendants = ont.get_all_descendants_of_topics(["artificial intelligence", "semantic web"])
+
+
+print(f"artificial intelligence is at level {ont.level['artificial intelligence']}")
